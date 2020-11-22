@@ -2,8 +2,15 @@
 
 <head>
   <title>Conv</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
 </head>
 <body>
   <script src="index.js"></script>
+
+  <button onclick="bass.play()">Bass</button>
+  <button onclick="snare.play()">Snare</button>
+  <button onclick="score.start();console.log('starting....')">Play</button>
+  <button onclick="score.loop();console.log('looping....')">Loop</button>
 </body>
 </html>
