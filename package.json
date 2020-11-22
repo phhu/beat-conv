@@ -1,6 +1,6 @@
 {
-  "name": "conv",
-  "version": "1.0.0",
+  "name": "beat-conv",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
