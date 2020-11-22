@@ -69,8 +69,8 @@ const sketchFunction = function(p) {
     global.beat = new p5.Part();
     beat.addPhrase( phrase('bass', "1000200010000020".repeat(2) + "00".repeat(16).repeat(1) ) );
     //beat.addPhrase( phrase('snare',"0010000100100001" ) );
-    beat.addPhrase( phrase('hh',("3000" + "3000".repeat(7)).repeat(16)) );
-    beat.addPhrase( phrase('hh2',("4000" + "0000".repeat(7)).repeat(16)) );
+    beat.addPhrase( phrase('hh',("3000" + "3000".repeat(7)).repeat(32)) );
+    beat.addPhrase( phrase('hh2',("4000" + "0000".repeat(7)).repeat(32)) );
     beat.addPhrase( phrase('control',("00" + "00".repeat(15) + "90" + "00".repeat(14) +"08" ) ) );
 
     beat.setBPM(120);
@@ -91,10 +91,23 @@ const sketchFunction = function(p) {
     };
   };
 
+  let boxW = 20;
+  let boxH = 20;
   p.draw = function() {   
-    p.background(0);
-    // zp.fill(255);
-    //p.rect(x, y, p.mouseX, p.mouseY);
+    //p.background(0);
+    played.forEach((r,i)=>{
+      let cells = r.split('');
+      cells.forEach((c,j)=>{
+        p.fill("white");
+        if (c=="1"){p.fill("cyan")}
+        if (c=="2"){p.fill("orange")}
+        if (c=="0"){p.fill("black")}
+        p.rect(j*boxW,i*boxH,boxW,boxH);
+      })
+    })
+
+
+
   };
   
   global.rec = [];
@@ -112,7 +125,9 @@ const sketchFunction = function(p) {
   }
   global.addRec = () => {
     beat.removePhrase('bass');
-    beat.addPhrase(phrase('bass', alterRec(recToArray({},rec).join("")) + "0".repeat(32) ))
+    let newRec = recToArray({},rec).join("");
+    played.push(newRec);
+    beat.addPhrase(phrase('bass', alterRec(newRec) + "0".repeat(32) ))
   }
 
   global.alterRec = (x) => {
