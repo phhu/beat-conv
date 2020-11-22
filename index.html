@@ -10,7 +10,12 @@
 
   <button onclick="bass.play()">Bass</button>
   <button onclick="snare.play()">Snare</button>
-  <button onclick="score.start();console.log('starting....')">Play</button>
-  <button onclick="score.loop();console.log('looping....')">Loop</button>
+  <button onclick="score.start();console.log('Play....')">Play</button>
+  <!--
+    <button onclick="score.loop();console.log('looping....')">Loop</button>
+  -->
+  <button onclick="score.stop();console.log('Stop.')">Stop</button>
+  <button onclick="addRec();console.log('replace')">Replace</button>
+  <button onclick="location.reload();console.log('reset')">Reset</button>
 </body>
 </html>

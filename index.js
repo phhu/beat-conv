@@ -22,12 +22,12 @@ const sketchFunction = function(p) {
     hhOpen = p.loadSound('sounds/_808-OpenHiHats05.mp3');
     hhClosed = p.loadSound('sounds/_808-closed-hi-hat-9.mp3');
     global.keyToSound = {
-      "32": bass,
-      "z": bass,
-      "13": snare,
-      "90": snare,   //90=zz
-      [p.SHIFT]: hhOpen,
-      "191": hhClosed,    // / ?
+      "32": "bass",
+      "z": "bass",
+      "13": "snare",
+      "90": "snare",   //90=zz
+      [p.SHIFT]: "hhOpen",
+      "191": "hhClosed",    // / ?
     };
   }
   p.setup = function() {
@@ -42,30 +42,53 @@ const sketchFunction = function(p) {
       bass.rate(playbackRate);
       bass.play(time);
     }
-    
-    sounds = ['','bass','snare','hhClosed'];
-    const phrase = (part, pattern) => new p5.Phrase(part, (time,val)=>{
-      if (val){
-        let p2 = sounds[val];
-        //global[p2].rate(rate); 
-        global[p2].play(time);
-      }
-    }, pattern.split('').map(x=>parseInt(x))
-    );
+    global.played = [];
+    sounds = ['','bass','snare','hhClosed','hhOpen'];
+    global.phrase = (part, pattern) => {
+      if(part=='bass'){played.push(pattern.substr(0,32));}
+      return new p5.Phrase(part, (time,val)=>{
+        /*if (part == 'bass'){
+          played.push(val);
+        }*/
+        if (val ===9){
+          clearRec();
+        } else if (val === 8){
+          dumpRec();
+          addRec();
+        } else if (val){
+          let p2 = sounds[val];
+          //global[p2].rate(rate); 
+          global[p2].play(time);
+        } 
+        }, pattern.split('').map(x=>parseInt(x))
+      )
+    };
 
     //let bassPhrase =  makePhrase('bass', [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0] );   
     //let snarePhrase = makePhrase('snare',[0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1] );
     global.beat = new p5.Part();
-    beat.addPhrase( phrase('bass', "1020100210201002" + "0".repeat(16).repeat(1) ) );
+    beat.addPhrase( phrase('bass', "1000200010000020".repeat(2) + "00".repeat(16).repeat(1) ) );
     //beat.addPhrase( phrase('snare',"0010000100100001" ) );
-    beat.addPhrase( phrase('hh',"30".repeat(16).repeat(6)) );
-    beat.setBPM(60);
+    beat.addPhrase( phrase('hh',("3000" + "3000".repeat(7)).repeat(16)) );
+    beat.addPhrase( phrase('hh2',("4000" + "0000".repeat(7)).repeat(16)) );
+    beat.addPhrase( phrase('control',("00" + "00".repeat(15) + "90" + "00".repeat(14) +"08" ) ) );
+
+    beat.setBPM(120);
     //beat.start();
     global.score = new p5.Score();
     score.parts.push(beat);  //score.parts.push(beat);score.parts.push(beat);
-    score.setBPM(60);
+    score.setBPM(120);
     //score.loop(true);
     //score.start();
+
+
+    p5.Part.prototype.removePhrase = function (name) {
+      for (var i in this.phrases) {
+          if (this.phrases[i].name === name) {
+              this.phrases.splice(i, 1);
+          }
+      }
+    };
   };
 
   p.draw = function() {   
@@ -73,15 +96,74 @@ const sketchFunction = function(p) {
     // zp.fill(255);
     //p.rect(x, y, p.mouseX, p.mouseY);
   };
+  
+  global.rec = [];
+
+  global.clearRec = () => {
+    rec=[];
+    rec.start = Date.now()
+    console.log("clearing rec");
+  }
+  global.dumpRec = () => {
+    console.log(    // 87=w
+      rec,
+      recToArray({},rec).join("")
+    )
+  }
+  global.addRec = () => {
+    beat.removePhrase('bass');
+    beat.addPhrase(phrase('bass', alterRec(recToArray({},rec).join("")) + "0".repeat(32) ))
+  }
+
+  global.alterRec = (x) => {
+    const r = Math.floor(p.random(0,32))
+    const a = x.split('');
+    const c = a[r];
+    let n = '0'
+    if (c === "0"){n = p.random(["1","2"])} 
+    if (c === "1"){n = p.random(["0","2"])} 
+    if (c === "2"){n = p.random(["0","1"])} 
+    a[r] = n;
+    return a.join('');
+  }
+
+
 
   p.keyPressed = function() {
-    console.log("keyCode:",p.keyCode,keyToSound[  p.keyCode] );
+    //console.log("keyCode:",p.keyCode,keyToSound[  p.keyCode] );
+    if (p.keyCode == 81){clearRec()};    // 81=q
+    if (p.keyCode == 87){dumpRec()};    // 81=q
     if (keyToSound[p.keyCode]){
-      keyToSound[  p.keyCode].play();
+      const soundName = keyToSound[p.keyCode];
+      //if (rec.length < 1){rec.start = Date.now()};
+      rec.push({
+        //t:Date.now(),
+        offset: Date.now() - rec.start,
+        soundName,
+        x: sounds.indexOf(soundName),
+      });
+      console.log(rec);  
+      global[soundName].play();
       return false;
+
     }
-    return true;
+    return true;   // allow other keys to pass through
   };
+  global.recToArray = ({offset=60,bpm=120,subdivisions = 4}={},rec) => {
+    const seq = Array.from({ length: 32 }, (v, i) => i)
+    const m = (60 * 1000) / (bpm * subdivisions)
+    return seq.map(i=>{
+      const items = rec.filter(item => item.offset >= i*m && item.offset < (i+1)*m);
+      if (items.length === 0){
+        return 0
+      } else {
+        return items[0].x
+      }
+    });
+    //return seq;
+  }
+
+
 };
 
 const sketch = new p5(sketchFunction)
