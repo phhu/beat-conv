@@ -43,17 +43,22 @@ const sketchFunction = function(p) {
       bass.play(time);
     }
     
-    const phrase = (part, pattern) => new p5.Phrase(part, (time,rate)=>{
-      global[part].rate(rate); 
-      global[part].play(time);
+    sounds = ['','bass','snare','hhClosed'];
+    const phrase = (part, pattern) => new p5.Phrase(part, (time,val)=>{
+      if (val){
+        let p2 = sounds[val];
+        //global[p2].rate(rate); 
+        global[p2].play(time);
+      }
     }, pattern.split('').map(x=>parseInt(x))
     );
 
     //let bassPhrase =  makePhrase('bass', [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0] );   
     //let snarePhrase = makePhrase('snare',[0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1] );
     global.beat = new p5.Part();
-    beat.addPhrase( phrase('bass', "1000100010001000" ) );
-    beat.addPhrase( phrase('snare',"0010000100100001" ) );
+    beat.addPhrase( phrase('bass', "1020100210201002" + "0".repeat(16).repeat(1) ) );
+    //beat.addPhrase( phrase('snare',"0010000100100001" ) );
+    beat.addPhrase( phrase('hh',"30".repeat(16).repeat(6)) );
     beat.setBPM(60);
     //beat.start();
     global.score = new p5.Score();
