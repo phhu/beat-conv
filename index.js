@@ -10,6 +10,7 @@ global.bass = undefined;
 global.snare = undefined;
 global.hhOpen = undefined;
 global.hhClosed = undefined;
+global.showRec = false;
 
 const sketchFunction = function(p) {
   window.p = p;
@@ -35,7 +36,7 @@ const sketchFunction = function(p) {
     if (p.getAudioContext().state !== 'running') {
       p.getAudioContext().resume();
     }
-    p.createCanvas(700, 410);
+    p.createCanvas(700, 1000);
     //bass.play(1);
     //  setTimeout(()=>snare.play(1),1000);
     function onEachStep(time, playbackRate) {
@@ -51,8 +52,10 @@ const sketchFunction = function(p) {
           played.push(val);
         }*/
         if (val ===9){
+          showRec = true;
           clearRec();
         } else if (val === 8){
+          showRec = false;
           dumpRec();
           addRec();
         } else if (val){
@@ -94,7 +97,11 @@ const sketchFunction = function(p) {
   let boxW = 20;
   let boxH = 20;
   p.draw = function() {   
-    //p.background(0);
+    p.background("white");
+    if(showRec){
+      p.fill("red");
+      p.text("REC", 650,15);
+    }
     played.forEach((r,i)=>{
       let cells = r.split('');
       cells.forEach((c,j)=>{
