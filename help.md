@@ -1,7 +1,7 @@
-Beat Conv
-=========
+Beat Conversation
+=================
 
-This is a draft project which looks at cybernetic conversation using basic drum patterns consisting of bass and snare drum sounds.
+This is a draft project which looks at cybernetic conversation using basic drum patterns consisting of bass and snare drum sounds. The idea is that a beat will be played to you, which you can play back, perhaps changing it, and then what you play back will be played back to you, with a small change, and the cycle repeats....
 
 To use:
 
@@ -22,4 +22,4 @@ Keyboard controls:
 * shift - open high hat
 * ? / - closed high hat
 
-
+Is the noise in this process constructive, or just annoying? With the current setup, which is short on accuracy of recording and musical sensitivity in variations, possibly mostly the latter, but perhaps with some refinement it would become fun!
